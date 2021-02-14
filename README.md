@@ -1,5 +1,5 @@
 # Computational-Musicology-Portfolio
-By Wim Pilkes
+By W. N. Pilkes
 
 
 # The Corpus
