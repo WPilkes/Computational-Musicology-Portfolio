@@ -2,7 +2,9 @@
 title: "README"
 author: "Wim Pilkes"
 date: "2/14/2021"
-output: html_document
+output:
+  html_document:
+    keep_md: true
 ---
 
 
