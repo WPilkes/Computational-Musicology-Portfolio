@@ -1,3 +1,12 @@
+---
+title: "README"
+author: "Wim Pilkes"
+date: "2/14/2021"
+output: html_document
+---
+
+
+
 # Computational-Musicology-Portfolio
 By Wim Pilkes
 
@@ -12,5 +21,4 @@ There is a slight overlap between the two lists. For example, the classic jazz s
 # Research ideas
 This leads into multiple interesting things that can be researched:
 How do these list differ from each other and why? Can this explain my decisions in when to listen to which playlist? What similarities can be found throughout the whole corpus?
-
 
