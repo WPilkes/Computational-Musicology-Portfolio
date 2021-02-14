@@ -7,10 +7,15 @@ output:
     keep_md: true
 ---
 
+```{r}
+print("test")
+```
+
+
 
 
 # Computational-Musicology-Portfolio
-By Wim Pilkes
+By Wim Nicolaas Pilkes
 
 
 # The Corpus
