@@ -29,12 +29,6 @@ jazz <- rbind(genjazz, elejazz)
 
 ### My Jazz Habits
 
-
-```{r}
-
-
-```
-
 ***
 
 When I am studying or just relaxing I often listen to Jazz. It can set a mood and is often good background music whilst focussing on other things. I have got two main spotify jazz lists I listen to.
@@ -81,6 +75,12 @@ grid.arrange(p1, p2, p3, p4, ncol=2)
 ***
 
 
+After exploring the two lists, some notable differences and similarities were found. First of all, as predicted, the elevator jazz list has lower energy and a higher acousticness.
+
+
+Secondly, it was found that the elevator jazz list has a lower speechiness. This is expected, because the list was designed to not contain any vocals. To the contrary the elevator jazz list has a higher danceability, this is unexpected because the list is mainly listened to when I am studying. This is also interesting because this list has a lower overal energy, yet a higher danceability. 
+
+
 ### Further Evaluation
 
 ```{r, echo=FALSE}
@@ -95,7 +95,3 @@ ggplot(jazz, aes(x=energy, y=acousticness, color=playlist_name)) +
 
 
 ### Conclusion
-
-```{r}
-
-```
