@@ -10,7 +10,11 @@ output:
     keep_md: true 
 ---
 
+```{r}
 
+library(compmus)
+library(signal)
+```
 
 ```{r}
 library(spotifyr)
@@ -24,10 +28,33 @@ library(flexdashboard)
 ```{r, echo=FALSE}
 genjazz <- get_playlist_audio_features("", "5vXOWi2SAMHjQUv2p77wok")
 elejazz <- get_playlist_audio_features("", "2F2bLwuWwWWNwWb0VtZ0Ig")
-jazz <- rbind(genjazz, elejazz)
+orijazz <- get_playlist_audio_features("", "5m1ElO7AZ7y1qsdKHUqNQv")
+
+jazz_gen_ele<- rbind(genjazz, elejazz)
+jazz_ele_ori <- rbind(elejazz, orijazz)
+jazz_full <- rbind(genjazz, elejazz, orijazz)
 ```
 
-### My Jazz Habits
+### My Jazz Habits: Different playlist for different moods
+
+<br/><br/>
+
+My general jazz: <br/>
+https://open.spotify.com/playlist/5vXOWi2SAMHjQUv2p77wok?si=UOyfD71rQ4m_tJ3yhPypLA <br/>
+
+My elevator jazz: <br/>
+https://open.spotify.com/playlist/2F2bLwuWwWWNwWb0VtZ0Ig?si=QP4-U6HNR4ax-mHIvLyA5w <br/>
+
+Original tracks of the elevator jazz list: <br/>
+https://open.spotify.com/playlist/5m1ElO7AZ7y1qsdKHUqNQv?si=aQeg35uYQ-aC_-xFhUyG8A <br/>
+
+<br/><br/>
+
+(Give a visual impression of what the playlists consist of, put some album covers or pictures of artist here. Do something with the hyperlinks of the playlists.)
+
+
+
+
 
 ***
 
@@ -37,7 +64,12 @@ The other jazz list consists of more "toned-down" versions of popular jazz songs
 
 There is a slight overlap between the two lists. For example, the classic jazz song "Take five - The Dave Bruback Quartet" is part of general jazz list, whilst a different version "Take 5 - New York Jazz Lounge" is part of the elevator jazz list. These songs are extremely similar, yet sometimes I want to listen to the normal jazz list and sometimes to the elevator jazz list.
 
-This leads into multiple interesting things that can be researched:
+
+Given that the elevator jazz list consists of simplified versions of popular jazz songs, it would be interesting to find out how they differ. Thus I have created a version of this list with the original tracks. These list will also be compared. 
+
+<b/r>
+
+All this leads into multiple interesting things that can be researched:
 
 - How do these list differ from each other and why?
 
@@ -45,26 +77,28 @@ This leads into multiple interesting things that can be researched:
 
 - What similarities can be found throughout the whole corpus?
 
-### Exploring the Playlists
+- How do the elevator jazz songs differ from the originals?
+
+### Comparing the elevator jazz with the general jazz list.
 
 ```{r, echo=FALSE}
 
-p1 <- ggplot(jazz, aes(x=playlist_name, y = energy, fill = playlist_name)) +
+p1 <- ggplot(jazz_gen_ele, aes(x=playlist_name, y = energy, fill = playlist_name)) +
   geom_boxplot() + 
   theme(legend.position = "none", axis.title.x = element_blank())
 
 
-p2 <- ggplot(jazz, aes(x=playlist_name, y =acousticness, fill = playlist_name)) +
+p2 <- ggplot(jazz_gen_ele, aes(x=playlist_name, y =acousticness, fill = playlist_name)) +
   geom_boxplot() + 
   theme(legend.position = "none", axis.title.x = element_blank())
 
 
-p3 <- ggplot(jazz, aes(x=playlist_name, y = speechiness, fill = playlist_name)) +
+p3 <- ggplot(jazz_gen_ele, aes(x=playlist_name, y = speechiness, fill = playlist_name)) +
   geom_boxplot() + 
   theme(legend.position = "none", axis.title.x = element_blank())+ 
   scale_y_log10()
   
-p4 <-ggplot(jazz, aes(x=playlist_name, y = danceability, fill = playlist_name)) +
+p4 <-ggplot(jazz_gen_ele, aes(x=playlist_name, y = danceability, fill = playlist_name)) +
   geom_boxplot() + 
   theme(legend.position = "none", axis.title.x = element_blank())
 
@@ -77,16 +111,48 @@ grid.arrange(p1, p2, p3, p4, ncol=2)
 
 After exploring the two lists, some notable differences and similarities were found. First of all, as predicted, the elevator jazz list has lower energy and a higher acousticness.
 
-
 Secondly, it was found that the elevator jazz list has a lower speechiness. This is expected, because the list was designed to not contain any vocals. To the contrary the elevator jazz list has a higher danceability, this is unexpected because the list is mainly listened to when I am studying. This is also interesting because this list has a lower overal energy, yet a higher danceability. 
+
+
+### Comparing the elevator jazz with its original songs. 
+
+```{r, echo=FALSE}
+
+p1 <- ggplot(jazz_ele_ori, aes(x=playlist_name, y = energy, fill = playlist_name)) +
+  geom_boxplot() + 
+  theme(legend.position = "none", axis.title.x = element_blank())
+
+
+p2 <- ggplot(jazz_ele_ori, aes(x=playlist_name, y =acousticness, fill = playlist_name)) +
+  geom_boxplot() + 
+  theme(legend.position = "none", axis.title.x = element_blank())
+
+
+p3 <- ggplot(jazz_ele_ori, aes(x=playlist_name, y = speechiness, fill = playlist_name)) +
+  geom_boxplot() + 
+  theme(legend.position = "none", axis.title.x = element_blank())+ 
+  scale_y_log10()
+  
+p4 <-ggplot(jazz_ele_ori, aes(x=playlist_name, y = danceability, fill = playlist_name)) +
+  geom_boxplot() + 
+  theme(legend.position = "none", axis.title.x = element_blank())
+
+grid.arrange(p1, p2, p3, p4, ncol=2)
+
+```
+
+
+***
+
+
 
 
 ### Further Evaluation
 
 ```{r, echo=FALSE}
 
-ggplot(jazz, aes(x=energy, y=acousticness, color=playlist_name)) +
-  geom_point() 
+ggplot(jazz_full, aes(x=energy, y=acousticness, color=playlist_name)) +
+  geom_point(alpha=.6) 
 
 ```
 
