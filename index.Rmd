@@ -12,17 +12,17 @@ output:
 
 ```{r}
 
-library(compmus)
-library(signal)
 ```
 
 ```{r}
+
+library(compmus)
+library(tidyverse)
 library(spotifyr)
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
 library(flexdashboard)
-
 ```
 
 ```{r, echo=FALSE}
@@ -34,6 +34,54 @@ jazz_gen_ele<- rbind(genjazz, elejazz)
 jazz_ele_ori <- rbind(elejazz, orijazz)
 jazz_full <- rbind(genjazz, elejazz, orijazz)
 ```
+
+
+
+### NEW! Different Timbre Coefficients between the Elevator Jazz and its Original List
+```{r}
+bebop <-
+  get_playlist_audio_features(
+    "",
+    "2F2bLwuWwWWNwWb0VtZ0Ig"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+bigband <-
+  get_playlist_audio_features(
+    "",
+    "5m1ElO7AZ7y1qsdKHUqNQv"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+jazz3 <-
+  bebop %>%
+  mutate(genre = "Elevator Jazz") %>%
+    bind_rows(bigband %>% mutate(genre = "Elevator Jazz (Originals)"))
+
+jazz3 %>%
+  mutate(
+    timbre =
+      map(
+        segments,
+        compmus_summarise,
+        timbre,
+        method = "mean"
+      )
+  ) %>%
+  select(genre, timbre) %>%
+  compmus_gather_timbre() %>%
+  ggplot(aes(x = basis, y = value, fill = genre)) +
+  geom_violin() +
+  scale_fill_viridis_d() +
+  labs(x = "Spotify Jazz lists Timbre Coefficients", y = "", fill = "Playlist")
+```
+
+***
+
+Here you can see a summary of the different timbre coefficients between "Elevator Jazz" and "Elevator Jazz (Originals). 
+
+
+
 
 ### My Jazz Habits: Different playlist for different moods
 
