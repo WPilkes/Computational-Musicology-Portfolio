@@ -37,49 +37,102 @@ jazz_full <- rbind(genjazz, elejazz, orijazz)
 
 
 
-### NEW! Different Timbre Coefficients between the Elevator Jazz and its Original List
-```{r}
-bebop <-
-  get_playlist_audio_features(
-    "",
-    "2F2bLwuWwWWNwWb0VtZ0Ig"
-  ) %>%
-  slice(1:30) %>%
-  add_audio_analysis()
-bigband <-
-  get_playlist_audio_features(
-    "",
-    "5m1ElO7AZ7y1qsdKHUqNQv"
-  ) %>%
-  slice(1:30) %>%
-  add_audio_analysis()
-jazz3 <-
-  bebop %>%
-  mutate(genre = "Elevator Jazz") %>%
-    bind_rows(bigband %>% mutate(genre = "Elevator Jazz (Originals)"))
+### [NEW!!!] Outliers within the corpus: confusing relations between the Tempo of different Songs
 
-jazz3 %>%
-  mutate(
-    timbre =
-      map(
-        segments,
-        compmus_summarise,
-        timbre,
-        method = "mean"
-      )
-  ) %>%
-  select(genre, timbre) %>%
-  compmus_gather_timbre() %>%
-  ggplot(aes(x = basis, y = value, fill = genre)) +
-  geom_violin() +
-  scale_fill_viridis_d() +
-  labs(x = "Spotify Jazz lists Timbre Coefficients", y = "", fill = "Playlist")
+```{r}
+
+graph_intro <- ggplot(jazz_ele_ori, aes(x=playlist_name, y = tempo, fill = playlist_name)) +
+  geom_boxplot() + 
+  theme(legend.position = "none", axis.title.x = element_blank()) 
+
+track_ele <- get_tidy_audio_analysis("2gLX4rTL0C619j1oLJxNXp") %>%
+  select(segments) %>%
+  unnest(segments)
+
+graph_ele <- track_ele %>%
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
+  arrange(start) %>%
+  mutate(pitches = map2(pitches, lag(pitches), `-`)) %>%
+  slice(-1) %>%
+  compmus_gather_chroma() %>%
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = pmax(0, value)
+    )
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  xlim(0, 100) +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude",  title="[A] I wanna Be Around - Beegie Adair | 215.908 BPM" )  +
+  theme_classic() + theme( plot.title = element_text(size=6) )
+
+
+track_ori <-
+  get_tidy_audio_analysis("1smChL3Aq1U9DZA83LuDtp") %>%
+  select(segments) %>%
+  unnest(segments)
+
+graph_ori <- track_ori %>%
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
+  arrange(start) %>%
+  mutate(pitches = map2(pitches, lag(pitches), `-`)) %>%
+  slice(-1) %>%
+  compmus_gather_chroma() %>%
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = pmax(0, value)
+    )
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  xlim(0, 100) +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude", title="[B] I wanna Be Around - Tony Bennet | 69.601 BPM") +
+  theme_classic()+ theme( plot.title = element_text(size=6) )
+
+
+track_avg <-
+  get_tidy_audio_analysis("4BBoGx5zuFC07A8wx2V0cs") %>%
+  select(segments) %>%
+  unnest(segments)
+
+graph_avg <- track_avg %>%
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
+  arrange(start) %>%
+  mutate(pitches = map2(pitches, lag(pitches), `-`)) %>%
+  slice(-1) %>%
+  compmus_gather_chroma() %>%
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = pmax(0, value)
+    )
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  xlim(0, 100) +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude", title="[C] You Are the Sunshine of My Life - New york Bar Quartett | 109.921 BPM") +
+  theme_classic()+ theme( plot.title = element_text(size=6) )
+
+```
+
+
+```{r}
+grid.arrange(graph_intro, graph_avg, graph_ele, graph_ori, ncol=2)
 ```
 
 ***
 
-Here you can see a summary of the different timbre coefficients between "Elevator Jazz" and "Elevator Jazz (Originals). 
+Lets have a look at the outlier present in the "Elevator Jazz" list. We can see a boxplot of the differences in tempo for the "elevator jazz" list and the list of the original songs of that list (upper left). As you can see they have a mostly similar distribution. But the "Elevator Jazz" list has one outlier: "I wanna Be Around - Beegie Adair" at an average tempo of 215.908 BPM. This seems very interesting. Thus it is time to compare this song with its original "I wanna Be Around - Tony Bennet", and a song in the playlist with an average tempo: "You Are the Sunshine of My Life - New york Bar Quartett".
 
+After listening to these three songs it is apparent that both song [B] and [C] actually have a higher tempo than song [A]. Actually, song [A] seems to be one of the more slower songs in the corpus, yet spotify has decided it has a high BPM. The chordograms also do not show any irregularities.
 
 
 
@@ -126,6 +179,8 @@ All this leads into multiple interesting things that can be researched:
 - What similarities can be found throughout the whole corpus?
 
 - How do the elevator jazz songs differ from the originals?
+
+
 
 ### Comparing the elevator jazz with the general jazz list.
 
@@ -192,6 +247,50 @@ grid.arrange(p1, p2, p3, p4, ncol=2)
 
 ***
 
+
+
+### Different Timbre Coefficients between the Elevator Jazz and its Original List
+```{r}
+bebop <-
+  get_playlist_audio_features(
+    "",
+    "2F2bLwuWwWWNwWb0VtZ0Ig"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+bigband <-
+  get_playlist_audio_features(
+    "",
+    "5m1ElO7AZ7y1qsdKHUqNQv"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+jazz3 <-
+  bebop %>%
+  mutate(genre = "Elevator Jazz") %>%
+    bind_rows(bigband %>% mutate(genre = "Elevator Jazz (Originals)"))
+
+jazz3 %>%
+  mutate(
+    timbre =
+      map(
+        segments,
+        compmus_summarise,
+        timbre,
+        method = "mean"
+      )
+  ) %>%
+  select(genre, timbre) %>%
+  compmus_gather_timbre() %>%
+  ggplot(aes(x = basis, y = value, fill = genre)) +
+  geom_violin() +
+  scale_fill_viridis_d() +
+  labs(x = "Spotify Jazz lists Timbre Coefficients", y = "", fill = "Playlist")
+```
+
+***
+
+Here you can see a summary of the different timbre coefficients between "Elevator Jazz" and "Elevator Jazz (Originals). 
 
 
 
